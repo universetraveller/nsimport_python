@@ -1,7 +1,8 @@
-======================================================================================
-nsimport: Load modules to different namespaces (not inject them into global namespace)
-======================================================================================
-With creating individual namespaces for python import mechanism, we can use NsImporter to load modules without conflict.  
+===================================================================================================
+nsimport: Import modules to independent namespaces (not load to sys.modules) with modified difflib.
+===================================================================================================
+
+With creating individual namespaces for python import mechanism, we can use NsImporter to load modules without conflict, loading modules to different namespaces (not inject them into global namespace). 
 
 All modules loaded by NsImporters will be added to NsImporter's own namespace (access with self.sys), and sys.module contains no them.  
 

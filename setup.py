@@ -13,12 +13,12 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = 'nsimport'
-DESCRIPTION = 'Load modules to different namespaces (not inject them into global namespace).'
+DESCRIPTION = 'Import modules to independent namespaces (not load to sys.modules) with modified difflib.'
 URL = 'https://github.com/universetraveller/nsimport_python'
 EMAIL = 'universetraveller@outlook.com'
 AUTHOR = 'universetraveller'
 REQUIRES_PYTHON = '>=3.8.0'
-VERSION = '0.1.0'
+VERSION = '0.1.1'
 
 # What packages are required for this module to be executed?
 REQUIRED = [
@@ -122,7 +122,6 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: Implementation :: CPython',
-        'Programming Language :: Python :: Implementation :: PyPy'
     ],
     # $ setup.py publish support.
     cmdclass={
