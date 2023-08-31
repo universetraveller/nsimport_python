@@ -7,7 +7,7 @@ All modules loaded by NsImporters will be added to NsImporter's own namespace (a
 
 So we can import our modules without conflict such as modules with same name, different packages versions or other situations we do not want loaded modules present in sys.modules.  
 
-* This library is modified from `importlib <https://github.com/python/cpython/tree/3.8/Lib/importlib>`_ of python3.8, but there are only 2 differences between nsimport and importlib:
+This library is modified from `importlib <https://github.com/python/cpython/tree/3.8/Lib/importlib>`_ of python3.8, but there are only 2 differences between nsimport and importlib:
 
         * __init__.py of importlib is edited to be nsimporter_internal.py by creating a class type to implement namespace initializing before being used to import modules. The class is initialized by set namespace's sys to parameter ``sys`` passed to it.  
 
@@ -23,6 +23,23 @@ But it is disencouraged to directly use APIs except ``nsimport.get_NsImporter(pa
 If you know exactly what module sys do when interpreter imports modules, you can create your own namespace and pass it to ``nsimport.NsImporter(sys)`` and it will be use to initialize the importer.  
 
 Different NsImporters have different namespaces (if different sys modules are passed to it), so it is feasible to use 2 or more importer at the same time.  
+
+You can access namespace's ``sys`` module by accessing instance's member ``sys`` using ``self.sys``, and access namespace's importlib bootstrap using ``self._bootstrap`` and ``self._bootstrap_external``.  
+
+----------
+Parameters
+----------
+
+* ``nsimport.get_NsImporter(path: list)`` 
+
+        ``path`` is a python list that indicates folders PathFinder use to find modules.  
+        Inside the importer, self.sys.path will be assigned ``path + sys.path``, and it acts as sys.path in importer's own namespace.  
+
+* ``nsimport.NsImporter(sys: module)``
+
+        ``sys`` is a module with attributes sys.path, sys.modules, sys.meta_path, sys.path_hooks and sys.path_importer_cache = {}. All of these  attributes should be independent to sys of global namespace, otherwise the importer will still add module to global sys.modules.  
+
+        ``nsimport.get_NsImporter`` provides a convenient way to create needed ``sys`` and passes it to NsImporter to create instance.  
 
 -------
 Example
