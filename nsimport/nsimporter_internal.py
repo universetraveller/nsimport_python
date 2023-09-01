@@ -83,11 +83,17 @@ def convert_modules_sys(_sys, _import):
                 setattr(_sys.modules[name], 'sys', _sys)
             continue
         _m_ori = _sys.modules.pop(name)
+        continue
+    # re-import will still face problem that fails to get attribute
+    # abort all imported modules after _bootstrap_external to make sure no flaky behaviour occurs
+    '''
         try:
             _m = _import(name)
+            _sys.modules[name] = _m
         except:
             _m = _m_ori
-        _sys.modules[name] = _m
+            pass
+    '''
     # workaround to keep name set of modules is same with original
     for name in set(_sys.modules.keys()) - names:
         _sys.modules.pop(name)
