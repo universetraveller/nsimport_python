@@ -163,5 +163,23 @@ class NsImporterTest(unittest.TestCase):
         self.assertEqual('my cgitb', m.return_same('my cgitb'))
         self.assertIsNone(getattr(sys.modules['cgitb'], 'return_same', None))
 
+    def test_issue_pre_loaded_modules(self):
+        # import enum before importing socket, and socket uses enum.IntEnum that uses global sys as namespace's sys
+        import enum
+        import sys
+        sys.modules.pop('socket', None)
+        inst = nsimport.get_NsImporter(['./dir0'])
+        m = inst.import_module('socket')
+
+    def test_issue_pre_loaded_modules_solved_no_leakage(self):
+        import enum
+        import sys
+        sys.modules.pop('socket', None)
+        inst = nsimport.get_NsImporter(['./dir0'])
+        m = inst.import_module('socket')
+        self.assertEqual(id(enum), id(sys.modules['enum']))
+        self.assertNotEqual(id(enum), id(inst.sys.modules['enum']))
+        self.assertEqual(id(inst.sys), id(inst.sys.modules['enum'].sys))
+
 if __name__ == '__main__':
     unittest.main()

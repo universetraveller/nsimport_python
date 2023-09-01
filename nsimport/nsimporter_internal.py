@@ -71,6 +71,27 @@ def reset_sys():
 def sys_contains(name):
     return f'{id(sys)}: {name in sys.modules}'
 
+__pre_loaded_modules = ('sys', 'builtins', '_frozen_importlib', '_imp', '_warnings', '_io', 'marshal', 'posix', '_frozen_importlib_external', '_thread', '_weakref', 'time', 'zipimport', '_codecs', 'codecs', 'encodings.aliases', 'encodings', 'encodings.utf_8', '_signal', '__main__', 'encodings.latin_1', '_abc', 'abc', 'io', '_stat', 'stat', '_collections_abc', 'genericpath', 'posixpath', 'os.path', 'os', '_sitebuiltins', '_locale', '_bootlocale', 'site', 'readline', 'atexit', 'rlcompleter') 
+def convert_modules_sys(_sys, _import):
+    names = set(_sys.modules.keys())
+    for name in names:
+        # skip modules before _bootstrap
+        if name in __pre_loaded_modules:
+            _m = _sys.modules[name]
+            if hasattr(_m, 'sys'):
+                _sys.modules[name] = copy_module(_m)
+                setattr(_sys.modules[name], 'sys', _sys)
+            continue
+        _m_ori = _sys.modules.pop(name)
+        try:
+            _m = _import(name)
+        except:
+            _m = _m_ori
+        _sys.modules[name] = _m
+    # workaround to keep name set of modules is same with original
+    for name in set(_sys.modules.keys()) - names:
+        _sys.modules.pop(name)
+
 def make_ins(path):
     #inspect_sys()
     reset_sys()
@@ -84,6 +105,7 @@ def make_ins(path):
     _sys.modules['builtins'] = _builtins
     _sys.path = path.copy() + _sys.path
     ins = implib(_sys)
+    convert_modules_sys(_sys, ins.import_module)
     return ins
 
 def copy_function(obj, _globals, module):

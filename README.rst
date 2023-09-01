@@ -67,9 +67,11 @@ For every NsImporter has its own namespace, all modules loaded by now loading mo
 
 Only test on python3.8, and you can run script `import_tests.py <./tests/import_tests.py>`_ to check if the library works.  
 
+Though try best to make sure the modules in sys.modules are isolated to namespace's sys.modules, modules imported before importing _bootsrap_external may still use global sys in its namespace. Not essential modules before _bootstrap_external are removed with function ``convert_modules_sys`` in `nsimporter_internal.py <./nsimport/nsimporter_internal.py>`_, and other modules will be copied and set new sys module. Unit test ``test_issue_pre_loaded_modules`` and ``test_issue_pre_loaded_modules_solved_no_leakage`` are for this problem. Another implementation does not face this problem.   
+
 Details of implementation are in function `nsimporter_internal.implib.__init__ <./nsimport/nsimporter_internal.py>`_ which replaces sys module of namespaces of _bootstrap functions with its own sys.  
 
 -------
 Advance
 -------
-Another implementation of namespace specific importer is in `moduleimporter <?>`_, and it provide more general apis, wrapper objects, and reflection mechanism for python modules.  
+Another implementation of namespace specific importer is in `moduleimporter <https://github.com/universetraveller/moduleimporter_python>`_, and it provide more general apis, wrapper objects, and reflection mechanism for python modules.  
